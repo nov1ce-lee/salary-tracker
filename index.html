@@ -152,6 +152,8 @@
   .cal-cell.today { background:var(--accent); color:#fff; font-weight:700; box-shadow:0 2px 10px rgba(232,96,58,0.25); cursor:default; }
   .cal-cell.overtime { background:#e3f2fd; color:var(--accent2); font-weight:600; }
   .cal-cell.overtime::after { content:'+'; position:absolute; top:1px; right:3px; font-size:10px; line-height:1; color:var(--accent2); }
+  .cal-cell.leave { background:#fef3e2; color:var(--gold); font-weight:600; }
+  .cal-cell.leave.work { background:#fef3e2; color:var(--gold); }
   .cal-cell.holiday.overtime { background:#e3f2fd; color:var(--accent2); }
   .cal-cell-tag { display:block; font-size:8px; text-transform:uppercase; margin-top:2px; opacity:0.6; }
 
@@ -252,7 +254,7 @@
     <div class="side-col" id="sideCol">
       <div class="panel" id="configPanel">
         <div class="panel-title">薪资引擎</div>
-        <div class="panel-desc">基础日薪 = 月薪 ÷ 有效工作日<br>月实发 = 基础日薪 ×（有效工作日 + 加班天数）<br><br>点击下方日历格子可标记/取消加班日</div>
+        <div class="panel-desc">基础日薪 = 月薪 ÷ 法定工作日<br>月实发 = 基础日薪 × 有效工作日<br><br>工作日点击→请假 · 周末点击→加班</div>
         <div class="field-row">
           <div class="field"><label>基础月薪 (¥)</label><input type="number" id="baseSalary" value="12000" step="100"></div>
           <div class="field">
@@ -288,21 +290,28 @@ var HOLIDAYS = (function(){
 
 function isHoliday(y,m,d){ return HOLIDAYS[y+'-'+pad(m+1)+'-'+pad(d)]===true; }
 
-// overtimeDates: Set of 'YYYY-MM-DD' strings that user marked as overtime
+// overtimeDates: 周末/节假日标记为加班的日期
 var overtimeDates = new Set();
+// leaveDates: 正常工作日标记为请假的日期
+var leaveDates = new Set();
 
 function keyDate(y,m,d){ return y+'-'+pad(m+1)+'-'+pad(d); }
 
 function isOvertime(y,m,d){ return overtimeDates.has(keyDate(y,m,d)); }
+function isLeave(y,m,d){ return leaveDates.has(keyDate(y,m,d)); }
 
-// 有效工作日 = 周一-周五非节假日 + 加班标记日（含周末、节假日）
+// 有效工作日 = 自然工作日 - 请假 + 周末节假日加班
 function isEffectiveWorkday(y,m,d){
-  if (isOvertime(y,m,d)) return true;
   var dw=new Date(y,m,d).getDay();
-  return dw!==0&&dw!==6&&!isHoliday(y,m,d);
+  var wk = dw===0||dw===6;
+  var hol = isHoliday(y,m,d);
+  if ((wk || hol) && isOvertime(y,m,d)) return true;
+  if (!wk && !hol && isLeave(y,m,d)) return false;
+  if (!wk && !hol) return true;
+  return false;
 }
 
-// 自然工作日 = 周一-周五非节假日（用于显示"法定"）
+// 自然工作日 = 周一-周五非节假日
 function isLegalWorkday(y,m,d){
   var dw=new Date(y,m,d).getDay();
   return dw!==0&&dw!==6&&!isHoliday(y,m,d);
@@ -327,13 +336,16 @@ function load(){
       if (s.overtimeDates && Array.isArray(s.overtimeDates)) {
         overtimeDates = new Set(s.overtimeDates);
       }
+      if (s.leaveDates && Array.isArray(s.leaveDates)) {
+        leaveDates = new Set(s.leaveDates);
+      }
     }
   }catch(e){}
   settings.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone||'Asia/Shanghai';
   document.getElementById('baseSalary').value=settings.baseSalary;
   document.getElementById('workStart').value=settings.workStart;
   document.getElementById('workEnd').value=settings.workEnd;
-  document.getElementById('overtimeDays').value = overtimeDates.size;
+  updateOvertimeDisplay();
 }
 
 function save(){
@@ -344,7 +356,8 @@ function save(){
     baseSalary:settings.baseSalary,
     workStart:settings.workStart,
     workEnd:settings.workEnd,
-    overtimeDates: Array.from(overtimeDates)
+    overtimeDates: Array.from(overtimeDates),
+    leaveDates: Array.from(leaveDates)
   }));
   compute();
 }
@@ -359,13 +372,14 @@ function compute(){
   var legalWorkdays = 0;
   for(var dd=1; dd<=daysInM; dd++) if(isLegalWorkday(y,m,dd)) legalWorkdays++;
 
-  // 有效工作日（含加班标记）
+  // 有效工作日
   var effectiveWorkdays = 0;
   for(var dd=1; dd<=daysInM; dd++) if(isEffectiveWorkday(y,m,dd)) effectiveWorkdays++;
 
-  // 加班天数 = 有效工作日 - 法定工作日
   var overtimeCount = effectiveWorkdays - legalWorkdays;
-  document.getElementById('overtimeDays').value = overtimeCount;
+  var leaveCount = legalWorkdays - effectiveWorkdays;
+  updateOvertimeDisplay();
+
   document.getElementById('heroWorkdays').textContent = effectiveWorkdays;
 
   // 日薪 & 月预计
@@ -396,7 +410,7 @@ function compute(){
   // 静态文本
   document.getElementById('todayHint').textContent = '已工作 ' + Math.floor(workedMin/60) + 'h ' + Math.round(workedMin%60) + 'm';
   document.getElementById('monthHint').textContent = '预计到手 ' + cny(projectedMonthly);
-  document.getElementById('dailyHint').textContent = '加班 ' + overtimeCount + ' 天 · 有效 ' + effectiveWorkdays + ' 天';
+  document.getElementById('dailyHint').textContent = '加班 ' + overtimeCount + ' 天 · 请假 ' + leaveCount + ' 天';
 
   // 进度条
   var tpct = todayProgress * 100;
@@ -410,14 +424,26 @@ function compute(){
   document.getElementById('monthSub').textContent = '累计 ' + cny(earnedMonth) + ' / ' + cny(projectedMonthly);
 
   // 日历描述
-  document.getElementById('calDesc').textContent = '法定 ' + legalWorkdays + ' 天 + 加班 ' + overtimeCount + ' 天 = 有效 ' + effectiveWorkdays + ' 天 · 点击日期切换加班';
+  document.getElementById('calDesc').textContent =
+    '工作日点按请假' + (leaveCount ? ' · 已请' + leaveCount + '天' : '') +
+    ' · 周末/节假日点按加班' + (overtimeCount ? ' · 已加' + overtimeCount + '天' : '');
+}
+
+function updateOvertimeDisplay(){
+  var ot = document.getElementById('overtimeDays');
+  var lv = overtimeDates.size;
+  var lo = leaveDates.size;
+  if (lv || lo) {
+    ot.value = (lv>0?'+'+lv:'') + (lv&&lo?' ':'' ) + (lo>0?'-'+lo:'') + ' 天';
+  } else {
+    ot.value = '0 天';
+  }
 }
 
 // ====== 日历渲染 ======
-var calRenderedMonth = -1;
+var calInitialRender = false;
+
 function renderCal(y,m,today){
-  if (calRenderedMonth === m && document.getElementById('calGrid').children.length > 0) return;
-  calRenderedMonth = m;
   var grid = document.getElementById('calGrid');
   var days = new Date(y,m+1,0).getDate();
   var fd = new Date(y,m,1).getDay();
@@ -431,30 +457,44 @@ function renderCal(y,m,today){
     var wk=dow===0||dow===6;
     var hol=isHoliday(y,m,day);
     var ot=isOvertime(y,m,day);
+    var lv=isLeave(y,m,day);
 
     if(day===today) cell.classList.add('today');
-    else if(hol) cell.classList.add('holiday');
-    else if(wk) cell.classList.add('off');
+    else if(hol && !ot) cell.classList.add('holiday');
+    else if(wk && !ot) cell.classList.add('off');
     else cell.classList.add('work');
 
     if(ot) cell.classList.add('overtime');
+    if(lv) cell.classList.add('leave');
 
     cell.textContent=day;
-    if(hol){ var t=document.createElement('span'); t.className='cal-cell-tag'; t.textContent='假'; cell.appendChild(t); }
 
-    // 点击切换加班标记
+    // 标签
+    var tagText = '';
+    if(hol && !ot) tagText = '假';
+    else if(ot) tagText = '加';
+    else if(lv) tagText = '休';
+
+    if(tagText){
+      var t=document.createElement('span'); t.className='cal-cell-tag'; t.textContent=tagText; cell.appendChild(t);
+    }
+
+    // 点击切换
     (function(cellDay){
       cell.addEventListener('click', function(){
-        if (cellDay === today) return; // 今天不可选
         var kk = keyDate(y, m, cellDay);
-        if (overtimeDates.has(kk)) {
-          overtimeDates.delete(kk);
+        if (wk || hol) {
+          // 周末/节假日 → 切换加班
+          if (overtimeDates.has(kk)) overtimeDates.delete(kk);
+          else overtimeDates.add(kk);
         } else {
-          overtimeDates.add(kk);
+          // 工作日 → 切换请假
+          if (leaveDates.has(kk)) leaveDates.delete(kk);
+          else leaveDates.add(kk);
         }
-        document.getElementById('overtimeDays').value = overtimeDates.size;
-        calRenderedMonth = -1; // 强制重绘
+        updateOvertimeDisplay();
         save();
+        renderCal(y, m, today); // 立即重绘
       });
     })(day);
 
@@ -475,9 +515,9 @@ function tick(){
   document.getElementById('clockHint').textContent = settings.timezone;
   document.getElementById('heroSub').textContent = '时区 ' + settings.timezone + ' · ' + now.getFullYear() + '/' + pad(now.getMonth()+1) + '/' + pad(now.getDate());
 
-  // 薪资计算
+  // 薪资计算 & 日历（仅首次渲染，之后由点击事件驱动）
   compute();
-  renderCal(now.getFullYear(), now.getMonth(), now.getDate());
+  if (!calInitialRender) { renderCal(now.getFullYear(), now.getMonth(), now.getDate()); calInitialRender = true; }
 }
 
 // ====== 响应式 ======
