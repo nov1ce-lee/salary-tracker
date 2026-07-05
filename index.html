@@ -500,39 +500,47 @@ function renderCal(y, m, realToday, realNow){
     var ot=isOvertime(y,m,day);
     var lv=isLeave(y,m,day);
 
-    if(day===todayDate) cell.classList.add('today');
-    if(ot) { cell.classList.add('overtime'); cell.classList.remove('work','holiday','off'); }
-    if(lv) { cell.classList.add('leave'); cell.classList.remove('work','holiday','off'); }
+    // 用 inline style 完全控制样式，避免 CSS class 优先级问题
+    var bg = '', clr = '', fw = '';
 
-    // 纯样式兜底（未被 ot/lv/today 覆盖时）
-    if (!ot && !lv && day!==todayDate) {
-      if(hol) cell.classList.add('holiday');
-      else if(wk) cell.classList.add('off');
-      else cell.classList.add('work');
+    if (day===todayDate) {
+      bg = 'var(--accent)'; clr = '#fff'; fw = '700';
+    } else if (ot) {
+      bg = '#1a6fb5'; clr = '#fff'; fw = '600';  // 深蓝
+    } else if (lv) {
+      bg = '#c0392b'; clr = '#fff'; fw = '600';  // 深红
+    } else if (hol) {
+      bg = '#fff0ed'; clr = '#e8603a';
+    } else if (wk) {
+      bg = 'transparent'; clr = '#c5c0b8';
+    } else {
+      bg = '#f6f3ee'; clr = '#1a1a1a';
     }
-    if (day===todayDate && !ot && !lv) {
-      // today 不带 ot/lv 时保持 today 样式
-    }
+
+    cell.style.background = bg;
+    cell.style.color = clr;
+    if (fw) cell.style.fontWeight = fw;
 
     // 数字
     var numSpan = document.createElement('span');
     numSpan.textContent = day;
     cell.appendChild(numSpan);
 
-    // 标签（绝对定位圆点）
+    // 标签圆点
     var tagText = '';
-    var tagClass = '';
-    if (ot) { tagText = '加'; tagClass = 'ot-tag'; }
-    else if (lv) { tagText = '休'; tagClass = 'lv-tag'; }
+    var tagBg = '';
+    if (ot) { tagText = '加'; tagBg = '#1a6fb5'; }
+    else if (lv) { tagText = '休'; tagBg = '#c0392b'; }
 
     if(tagText){
       var t=document.createElement('span');
-      t.className = 'cal-cell-tag ' + tagClass;
+      t.className = 'cal-cell-tag';
       t.textContent = tagText;
+      t.style.background = tagBg;
       cell.appendChild(t);
     }
 
-    // 点击切换（所有月份都可操作，包括今天）
+    // 点击切换
     (function(cellDay, isWk, isHol){
       cell.addEventListener('click', function(){
         var kk = keyDate(y, m, cellDay);
