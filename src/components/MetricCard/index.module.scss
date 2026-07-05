@@ -1,0 +1,59 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  position: relative;
+  overflow: hidden;
+  min-height: 220rpx;
+  padding: 32rpx;
+  border-radius: 32rpx;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 24rpx 56rpx rgba(31, 38, 135, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: auto -40rpx -80rpx auto;
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 999rpx;
+  opacity: 0.24;
+}
+
+.violet::before {
+  background: radial-gradient(circle, #7c4dff 0%, rgba(124, 77, 255, 0) 72%);
+}
+
+.cyan::before {
+  background: radial-gradient(circle, #27d3ff 0%, rgba(39, 211, 255, 0) 72%);
+}
+
+.gold::before {
+  background: radial-gradient(circle, #ffb547 0%, rgba(255, 181, 71, 0) 72%);
+}
+
+.label {
+  position: relative;
+  z-index: 1;
+  font-size: 24rpx;
+  color: rgba(28, 34, 64, 0.62);
+}
+
+.value {
+  position: relative;
+  z-index: 1;
+  font-size: 52rpx;
+  line-height: 1.1;
+  font-weight: 700;
+  color: #12162f;
+}
+
+.hint {
+  position: relative;
+  z-index: 1;
+  font-size: 22rpx;
+  color: rgba(28, 34, 64, 0.52);
+}
