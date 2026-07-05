@@ -481,10 +481,10 @@ function renderCal(y,m,today){
     }
 
     // 点击切换
-    (function(cellDay){
+    (function(cellDay, isWk, isHol){
       cell.addEventListener('click', function(){
         var kk = keyDate(y, m, cellDay);
-        if (wk || hol) {
+        if (isWk || isHol) {
           // 周末/节假日 → 切换加班
           if (overtimeDates.has(kk)) overtimeDates.delete(kk);
           else overtimeDates.add(kk);
@@ -495,9 +495,9 @@ function renderCal(y,m,today){
         }
         updateOvertimeDisplay();
         save();
-        renderCal(y, m, today); // 立即重绘
+        renderCal(y, m, today);
       });
-    })(day);
+    })(day, wk, hol);
 
     grid.appendChild(cell);
   }
