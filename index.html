@@ -161,7 +161,7 @@
   .cal-cell.work { background:#f6f3ee; color:var(--ink); }
   .cal-cell.off { color:#c5c0b8; }
   .cal-cell.holiday { background:#fff0ed; color:var(--accent); cursor:pointer; }
-  .cal-cell.today { background:var(--accent); color:#fff; font-weight:700; box-shadow:0 2px 8px rgba(232,96,58,0.22); cursor:default; }
+  .cal-cell.today { background:var(--accent); color:#fff; font-weight:700; box-shadow:0 2px 8px rgba(232,96,58,0.22); }
   .cal-cell.overtime { background:var(--accent2); color:#fff; font-weight:600; }
   .cal-cell.leave { background:var(--gold); color:#fff; font-weight:600; }
   .cal-cell.holiday.overtime { background:var(--accent2); color:#fff; }
@@ -483,8 +483,7 @@ function updateMonthLabel(){
 function renderCal(y, m, realToday, realNow){
   calViewYear = y; calViewMonth = m;
   updateMonthLabel();
-  var isCurrentMonth = (y === realNow.getFullYear() && m === realNow.getMonth());
-  var todayDate = isCurrentMonth ? realToday : -1;
+  var todayDate = (y === realNow.getFullYear() && m === realNow.getMonth()) ? realToday : -1;
 
   var grid = document.getElementById('calGrid');
   var days = new Date(y,m+1,0).getDate();
@@ -502,11 +501,18 @@ function renderCal(y, m, realToday, realNow){
     var lv=isLeave(y,m,day);
 
     if(day===todayDate) cell.classList.add('today');
-    else if(ot) cell.classList.add('overtime');
-    else if(lv) cell.classList.add('leave');
-    else if(hol) cell.classList.add('holiday');
-    else if(wk) cell.classList.add('off');
-    else cell.classList.add('work');
+    if(ot) { cell.classList.add('overtime'); cell.classList.remove('work','holiday','off'); }
+    if(lv) { cell.classList.add('leave'); cell.classList.remove('work','holiday','off'); }
+
+    // 纯样式兜底（未被 ot/lv/today 覆盖时）
+    if (!ot && !lv && day!==todayDate) {
+      if(hol) cell.classList.add('holiday');
+      else if(wk) cell.classList.add('off');
+      else cell.classList.add('work');
+    }
+    if (day===todayDate && !ot && !lv) {
+      // today 不带 ot/lv 时保持 today 样式
+    }
 
     // 数字
     var numSpan = document.createElement('span');
@@ -526,27 +532,22 @@ function renderCal(y, m, realToday, realNow){
       cell.appendChild(t);
     }
 
-    // 点击切换（仅当月可操作）
-    if (isCurrentMonth) {
-      (function(cellDay, isWk, isHol){
-        cell.addEventListener('click', function(){
-          if (cellDay === todayDate) return;
-          var kk = keyDate(y, m, cellDay);
-          if (isWk || isHol) {
-            if (overtimeDates.has(kk)) overtimeDates.delete(kk);
-            else overtimeDates.add(kk);
-          } else {
-            if (leaveDates.has(kk)) leaveDates.delete(kk);
-            else leaveDates.add(kk);
-          }
-          updateOvertimeDisplay();
-          save();
-          renderCal(y, m, realToday, realNow);
-        });
-      })(day, wk, hol);
-    } else {
-      cell.style.cursor = 'default';
-    }
+    // 点击切换（所有月份都可操作，包括今天）
+    (function(cellDay, isWk, isHol){
+      cell.addEventListener('click', function(){
+        var kk = keyDate(y, m, cellDay);
+        if (isWk || isHol) {
+          if (overtimeDates.has(kk)) overtimeDates.delete(kk);
+          else overtimeDates.add(kk);
+        } else {
+          if (leaveDates.has(kk)) leaveDates.delete(kk);
+          else leaveDates.add(kk);
+        }
+        updateOvertimeDisplay();
+        save();
+        renderCal(y, m, realToday, realNow);
+      });
+    })(day, wk, hol);
 
     grid.appendChild(cell);
   }
