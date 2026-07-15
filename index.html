@@ -17,6 +17,7 @@
     --border: #e8e3dd;
     --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.05);
     --radius: 16px;
+    --radius-sm: 10px;
     --font-number: 'Avenir Next', 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
   }
 
@@ -30,7 +31,6 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* ── 纹理背景 ── */
   body::before {
     content: ''; position:fixed; inset:0; z-index:0; pointer-events:none;
     background: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='0.5' cy='0.5' r='0.5' fill='%23d8d3cc' opacity='0.5'/%3E%3C/svg%3E") repeat;
@@ -41,7 +41,6 @@
     position:relative; z-index:1; width:100%; max-width:1200px; margin:0 auto; padding:36px 28px 64px;
   }
 
-  /* ── 顶部 ── */
   .topbar {
     display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;
     margin-bottom:28px;
@@ -49,7 +48,6 @@
   .brand { font-size:13px; font-weight:600; letter-spacing:3px; color:var(--ink-dim); text-transform:uppercase; }
   .timestamp { font-size:12px; color:var(--ink-dim); font-family:var(--font-number); }
 
-  /* ── 仪表盘主卡片 ── */
   .dashboard {
     display:grid; grid-template-columns:1fr; gap:32px;
   }
@@ -65,9 +63,7 @@
     font-size:clamp(22px,3.5vw,36px); font-weight:700; letter-spacing:-0.5px;
     line-height:1.15; margin-bottom:6px;
   }
-  .hero-sub {
-    font-size:13px; color:var(--ink-dim); line-height:1.6; max-width:480px;
-  }
+  .hero-sub { font-size:13px; color:var(--ink-dim); line-height:1.6; max-width:480px; }
   .hero-kpi {
     display:flex; flex-direction:column; align-items:flex-end; gap:4px;
     padding:20px 24px; border-radius:20px;
@@ -76,7 +72,6 @@
   .hero-kpi-label { font-size:11px; color:var(--ink-dim); letter-spacing:1px; text-transform:uppercase; }
   .hero-kpi-value { font-size:48px; font-weight:700; color:var(--accent); line-height:1; font-family:var(--font-number); letter-spacing:-1px; }
 
-  /* ── 指标磁贴 ── */
   .tiles {
     display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:20px;
   }
@@ -96,10 +91,7 @@
   .tile-value.accent3 { color:var(--accent3); }
   .tile-hint { font-size:11px; color:var(--ink-dim); opacity:0.7; }
 
-  /* ── 进度条 ── */
-  .progress-row {
-    display:grid; grid-template-columns:1fr; gap:18px;
-  }
+  .progress-row { display:grid; grid-template-columns:1fr; gap:18px; }
   .prog-card {
     background:var(--card); border-radius:20px; padding:22px 24px;
     box-shadow:var(--shadow); border:1px solid var(--border);
@@ -113,7 +105,6 @@
   .prog-bar.today { background:var(--accent); }
   .prog-bar.month { background:var(--accent2); }
 
-  /* ── 面板通用 ── */
   .panel {
     background:var(--card); border-radius:20px; padding:30px 28px;
     box-shadow:var(--shadow); border:1px solid var(--border);
@@ -137,7 +128,7 @@
   }
   .btn:active { opacity:.8; transform:scale(.98); }
 
-  /* ── 日历 ── */
+  /* 日历 */
   .cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
   .cal-header-title { font-size:15px; font-weight:600; }
   .cal-nav { display:flex; gap:8px; }
@@ -158,23 +149,13 @@
     display:flex; align-items:center; justify-content:center;
     aspect-ratio:1.15;
   }
-  .cal-cell.work { background:#f6f3ee; color:var(--ink); }
-  .cal-cell.off { color:#c5c0b8; }
-  .cal-cell.holiday { background:#fff0ed; color:var(--accent); cursor:pointer; }
-  .cal-cell.today { background:var(--accent); color:#fff; font-weight:700; box-shadow:0 2px 8px rgba(232,96,58,0.22); }
-  .cal-cell.overtime { background:var(--accent2); color:#fff; font-weight:600; }
-  .cal-cell.leave { background:var(--gold); color:#fff; font-weight:600; }
-  .cal-cell.holiday.overtime { background:var(--accent2); color:#fff; }
   .cal-cell-tag {
     position:absolute; top:-4px; right:-4px;
     width:16px; height:16px; border-radius:50%;
     font-size:9px; font-weight:700; line-height:16px; text-align:center;
     color:#fff; z-index:2;
   }
-  .cal-cell-tag.ot-tag { background:var(--accent2); }
-  .cal-cell-tag.lv-tag { background:var(--gold); }
 
-  /* ── 响应式 ── */
   @media (min-width:700px) {
     .app { padding:44px 36px 72px; }
     .progress-row { grid-template-columns:1fr 1fr; }
@@ -189,13 +170,11 @@
 <body>
 
 <div class="app">
-  <!-- 顶栏 -->
   <div class="topbar">
     <span class="brand">Salary Engine</span>
     <span class="timestamp" id="topTime">--</span>
   </div>
 
-  <!-- Hero -->
   <div class="hero-card">
     <div class="hero-left">
       <div class="hero-title">精确计算每一秒的价值</div>
@@ -207,11 +186,8 @@
     </div>
   </div>
 
-  <!-- 两列布局容器 -->
   <div class="dashboard" id="dashboardRoot">
-    <!-- 左列 -->
     <div class="main-col" id="mainCol">
-      <!-- 指标磁贴 -->
       <div class="tiles">
         <div class="tile">
           <span class="tile-label">今日累计</span>
@@ -235,7 +211,6 @@
         </div>
       </div>
 
-      <!-- 进度条 -->
       <div class="progress-row">
         <div class="prog-card">
           <div class="prog-header">
@@ -255,7 +230,6 @@
         </div>
       </div>
 
-      <!-- 日历 -->
       <div class="panel" id="calendarPanel">
         <div class="panel-title">工作日历</div>
         <div class="cal-header">
@@ -274,7 +248,6 @@
       </div>
     </div>
 
-    <!-- 右列 -->
     <div class="side-col" id="sideCol">
       <div class="panel" id="configPanel">
         <div class="panel-title">薪资引擎</div>
@@ -282,8 +255,8 @@
         <div class="field-row">
           <div class="field"><label>基础月薪 (¥)</label><input type="number" id="baseSalary" value="12000" step="100"></div>
           <div class="field">
-            <label>已选加班天数</label>
-            <input type="text" id="overtimeDays" value="2" readonly style="background:#f6f3ee;cursor:default;color:var(--accent2);font-weight:600;">
+            <label>已选变更</label>
+            <input type="text" id="overtimeDays" value="0 天" readonly style="background:#f6f3ee;cursor:default;color:var(--accent2);font-weight:600;">
           </div>
         </div>
         <div class="field-row">
@@ -298,370 +271,199 @@
 
 <script>
 // ====== 节假日 ======
-var HOLIDAYS = (function(){
-  var s = {};
-  [
-    '2026-01-01',
-    '2026-02-16','2026-02-17','2026-02-18','2026-02-19','2026-02-20','2026-02-21',
-    '2026-04-05',
-    '2026-05-01','2026-05-02','2026-05-03',
-    '2026-06-19','2026-06-20','2026-06-21',
-    '2026-09-25','2026-09-26','2026-09-27',
-    '2026-10-01','2026-10-02','2026-10-03','2026-10-04','2026-10-05','2026-10-06','2026-10-07',
-  ].forEach(function(d){ s[d] = true; });
-  return s;
-})();
+var HOLIDAYS = {'2026-01-01':1,'2026-02-16':1,'2026-02-17':1,'2026-02-18':1,'2026-02-19':1,'2026-02-20':1,'2026-02-21':1,'2026-04-05':1,'2026-05-01':1,'2026-05-02':1,'2026-05-03':1,'2026-06-19':1,'2026-06-20':1,'2026-06-21':1,'2026-09-25':1,'2026-09-26':1,'2026-09-27':1,'2026-10-01':1,'2026-10-02':1,'2026-10-03':1,'2026-10-04':1,'2026-10-05':1,'2026-10-06':1,'2026-10-07':1};
 
-function isHoliday(y,m,d){ return HOLIDAYS[y+'-'+pad(m+1)+'-'+pad(d)]===true; }
+function pad(n){return('0'+n).slice(-2);}
+function fmt(n,d){return n.toFixed(d||2);}
+function cny(n){return'¥'+fmt(n);}
+function key(y,m,d){return y+'-'+pad(m+1)+'-'+pad(d);}
 
-// overtimeDates: 周末/节假日标记为加班的日期
-var overtimeDates = new Set();
-// leaveDates: 正常工作日标记为请假的日期
-var leaveDates = new Set();
+function isHoliday(y,m,d){return HOLIDAYS[key(y,m,d)]===1;}
+function isWeekend(y,m,d){var w=new Date(y,m,d).getDay();return w===0||w===6;}
+function isLegalWorkday(y,m,d){return!isWeekend(y,m,d)&&!isHoliday(y,m,d);}
 
-function keyDate(y,m,d){ return y+'-'+pad(m+1)+'-'+pad(d); }
+// 全局 Sets：存所有月份的标记日期
+var OT=new Set();  // overtimeDates
+var LV=new Set();  // leaveDates
 
-function isOvertime(y,m,d){ return overtimeDates.has(keyDate(y,m,d)); }
-function isLeave(y,m,d){ return leaveDates.has(keyDate(y,m,d)); }
+function isOvertime(y,m,d){return OT.has(key(y,m,d));}
+function isLeave(y,m,d){return LV.has(key(y,m,d));}
 
-// 有效工作日 = 自然工作日 - 请假 + 周末节假日加班
 function isEffectiveWorkday(y,m,d){
-  var dw=new Date(y,m,d).getDay();
-  var wk = dw===0||dw===6;
-  var hol = isHoliday(y,m,d);
-  if ((wk || hol) && isOvertime(y,m,d)) return true;
-  if (!wk && !hol && isLeave(y,m,d)) return false;
-  if (!wk && !hol) return true;
-  return false;
+  if(isLeave(y,m,d))return false;
+  if(isOvertime(y,m,d))return true;
+  return isLegalWorkday(y,m,d);
 }
 
-// 自然工作日 = 周一-周五非节假日
-function isLegalWorkday(y,m,d){
-  var dw=new Date(y,m,d).getDay();
-  return dw!==0&&dw!==6&&!isHoliday(y,m,d);
-}
+// ====== 统计指定月份的加班/请假天数 ======
+function countOT(y,m){var ds=new Date(y,m+1,0).getDate(),n=0;for(var d=1;d<=ds;d++)if(isOvertime(y,m,d))n++;return n;}
+function countLV(y,m){var ds=new Date(y,m+1,0).getDate(),n=0;for(var d=1;d<=ds;d++)if(isLeave(y,m,d))n++;return n;}
 
-// ====== 工具 ======
-function pad(n){ return ('0'+n).slice(-2); }
-function fmt(n,d){ return n.toFixed(d||2); }
-function cny(n){ return '¥'+fmt(n); }
-
-// ====== 全局状态 ======
-var settings = { baseSalary:12000, workStart:'09:00', workEnd:'18:30', timezone:'' };
+// ====== 设置 ======
+var S={baseSalary:12000,workStart:'09:00',workEnd:'18:30',timezone:''};
 
 function load(){
   try{
     var r=localStorage.getItem('wage-cosmos');
-    if(r){
-      var s=JSON.parse(r);
-      settings.baseSalary=s.baseSalary||12000;
-      settings.workStart=s.workStart||'09:00';
-      settings.workEnd=s.workEnd||'18:30';
-      if (s.overtimeDates && Array.isArray(s.overtimeDates)) {
-        overtimeDates = new Set(s.overtimeDates);
-      }
-      if (s.leaveDates && Array.isArray(s.leaveDates)) {
-        leaveDates = new Set(s.leaveDates);
-      }
-    }
+    if(r){var s=JSON.parse(r);S.baseSalary=s.baseSalary||12000;S.workStart=s.workStart||'09:00';S.workEnd=s.workEnd||'18:30';
+      if(s.OT)OT=new Set(s.OT);if(s.LV)LV=new Set(s.LV);}
   }catch(e){}
-  settings.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone||'Asia/Shanghai';
-  document.getElementById('baseSalary').value=settings.baseSalary;
-  document.getElementById('workStart').value=settings.workStart;
-  document.getElementById('workEnd').value=settings.workEnd;
-  updateOvertimeDisplay();
+  S.timezone=Intl.DateTimeFormat().resolvedOptions().timeZone||'Asia/Shanghai';
+  document.getElementById('baseSalary').value=S.baseSalary;
+  document.getElementById('workStart').value=S.workStart;
+  document.getElementById('workEnd').value=S.workEnd;
 }
 
-function save(){
-  settings.baseSalary=+document.getElementById('baseSalary').value||12000;
-  settings.workStart=document.getElementById('workStart').value||'09:00';
-  settings.workEnd=document.getElementById('workEnd').value||'18:30';
-  localStorage.setItem('wage-cosmos',JSON.stringify({
-    baseSalary:settings.baseSalary,
-    workStart:settings.workStart,
-    workEnd:settings.workEnd,
-    overtimeDates: Array.from(overtimeDates),
-    leaveDates: Array.from(leaveDates)
-  }));
-  compute();
+function persist(){
+  S.baseSalary=+document.getElementById('baseSalary').value||12000;
+  S.workStart=document.getElementById('workStart').value||'09:00';
+  S.workEnd=document.getElementById('workEnd').value||'18:30';
+  localStorage.setItem('wage-cosmos',JSON.stringify({baseSalary:S.baseSalary,workStart:S.workStart,workEnd:S.workEnd,OT:Array.from(OT),LV:Array.from(LV)}));
 }
 
-// ====== 计算 ======
-function compute(){
-  var now = new Date();
-  var y=now.getFullYear(), m=now.getMonth(), d=now.getDate();
+// ====== 核心：按年月刷新全部 UI ======
+function refresh(y,m,now){
+  var isNow=(y===now.getFullYear()&&m===now.getMonth());
+  var ds=new Date(y,m+1,0).getDate(), d=now.getDate();
 
-  // 工作日总数
-  var daysInM = new Date(y,m+1,0).getDate();
-  var legalWorkdays = 0;
-  for(var dd=1; dd<=daysInM; dd++) if(isLegalWorkday(y,m,dd)) legalWorkdays++;
-
-  // 有效工作日
-  var effectiveWorkdays = 0;
-  for(var dd=1; dd<=daysInM; dd++) if(isEffectiveWorkday(y,m,dd)) effectiveWorkdays++;
-
-  var overtimeCount = 0;  // 周末/节假日标记为加班的天数
-  var leaveCount = 0;      // 工作日标记为请假的天数
-  for(var dd=1; dd<=daysInM; dd++){
-    var isHolOrWk = isHoliday(y,m,dd) || (new Date(y,m,dd).getDay()===0 || new Date(y,m,dd).getDay()===6);
-    if (isHolOrWk && isOvertime(y,m,dd)) overtimeCount++;
-    if (!isHolOrWk && isLeave(y,m,dd)) leaveCount++;
+  var lw=0,ew=0,ot=0,lv=0;
+  for(var dd=1;dd<=ds;dd++){
+    if(isLegalWorkday(y,m,dd))lw++;
+    if(isEffectiveWorkday(y,m,dd))ew++;
+    if(isWeekend(y,m,dd)||isHoliday(y,m,dd)){if(isOvertime(y,m,dd))ot++;}
+    else{if(isLeave(y,m,dd))lv++;}
   }
-  updateOvertimeDisplay();
 
-  document.getElementById('heroWorkdays').textContent = effectiveWorkdays;
+  // 右上角显示
+  var otEl=document.getElementById('overtimeDays');
+  var p=[];if(ot)p.push('+'+ot);if(lv)p.push('-'+lv);
+  otEl.value=(ot||lv)?p.join(' ')+' 天':'0 天';
 
-  // 日薪 & 月预计
-  var legalDailySalary = legalWorkdays ? settings.baseSalary / legalWorkdays : 0;
-  var projectedMonthly = legalDailySalary * effectiveWorkdays;
+  var dp=lw?S.baseSalary/lw:0;
+  var proj=dp*ew;
 
-  // 今日进度
-  var st = settings.workStart.split(':'), et = settings.workEnd.split(':');
-  var ws = new Date(y,m,d,+st[0],+st[1],0).getTime();
-  var we = new Date(y,m,d,+et[0],+et[1],0).getTime();
-  var totalMin = Math.max((we-ws)/60000, 1);
-  var workedMin = Math.min(Math.max((now.getTime()-ws)/60000, 0), totalMin);
-  var todayProgress = workedMin / totalMin;
-  var remainingMin = Math.max(totalMin - workedMin, 0);
-  var earnedToday = isEffectiveWorkday(y,m,d) ? legalDailySalary * todayProgress : 0;
+  var st=S.workStart.split(':'),et=S.workEnd.split(':');
+  var ws=new Date(y,m,d,+st[0],+st[1],0).getTime();
+  var we=new Date(y,m,d,+et[0],+et[1],0).getTime();
+  var tm=Math.max((we-ws)/60000,1);
 
-  // 本月累计
-  var earnedBefore = 0;
-  for(var dd=1; dd<d; dd++) if(isEffectiveWorkday(y,m,dd)) earnedBefore += legalDailySalary;
-  var earnedMonth = earnedBefore + (isEffectiveWorkday(y,m,d) ? earnedToday : 0);
-  var monthProgress = projectedMonthly ? Math.min(earnedMonth / projectedMonthly, 1) : 0;
+  if(isNow){
+    var wk=Math.min(Math.max((now.getTime()-ws)/60000,0),tm);
+    var tp=wk/tm,rm=Math.max(tm-wk,0);
+    var td=isEffectiveWorkday(y,m,d)?dp*tp:0;
+    var eb=0;for(var dd=1;dd<d;dd++)if(isEffectiveWorkday(y,m,dd))eb+=dp;
+    var em=eb+(isEffectiveWorkday(y,m,d)?td:0);
+    var mp=proj?Math.min(em/proj,1):0;
 
-  // ── 更新 DOM ──
-  document.getElementById('todayEarned').textContent = cny(earnedToday);
-  document.getElementById('monthEarned').textContent = cny(earnedMonth);
-  document.getElementById('dailySalary').textContent = cny(legalDailySalary);
-
-  // 静态文本
-  document.getElementById('todayHint').textContent = '已工作 ' + Math.floor(workedMin/60) + 'h ' + Math.round(workedMin%60) + 'm';
-  document.getElementById('monthHint').textContent = '预计到手 ' + cny(projectedMonthly);
-  document.getElementById('dailyHint').textContent =
-    '加班 +' + overtimeCount + ' 天  ·  请假 -' + leaveCount + ' 天';
-
-  // 进度条
-  var tpct = todayProgress * 100;
-  document.getElementById('todayPct').textContent = fmt(tpct) + '%';
-  document.getElementById('todayBar').style.width = fmt(tpct) + '%';
-  document.getElementById('todaySub').textContent = '距离下班 ' + Math.floor(remainingMin/60) + 'h ' + Math.round(remainingMin%60) + 'm' + ' · ' + settings.workStart + '-' + settings.workEnd;
-
-  var mpct = monthProgress * 100;
-  document.getElementById('monthPct').textContent = fmt(mpct) + '%';
-  document.getElementById('monthBar').style.width = fmt(mpct) + '%';
-  document.getElementById('monthSub').textContent = '累计 ' + cny(earnedMonth) + ' / ' + cny(projectedMonthly);
-
-  // 日历描述
-  document.getElementById('calDesc').textContent =
-    '工作日点按请假  ·  周末/节假日点按加班';
-}
-
-function updateOvertimeDisplay(){
-  var ot = document.getElementById('overtimeDays');
-  var add = overtimeDates.size;
-  var sub = leaveDates.size;
-  if (add || sub) {
-    var parts = [];
-    if (add) parts.push('+'+add);
-    if (sub) parts.push('-'+sub);
-    ot.value = parts.join(' ') + ' 天';
-  } else {
-    ot.value = '0 天';
+    document.getElementById('todayEarned').textContent=cny(td);
+    document.getElementById('monthEarned').textContent=cny(em);
+    document.getElementById('todayHint').textContent='已工作 '+Math.floor(wk/60)+'h '+Math.round(wk%60)+'m';
+    document.getElementById('todayPct').textContent=fmt(tp*100)+'%';
+    document.getElementById('todayBar').style.width=fmt(tp*100)+'%';
+    document.getElementById('todaySub').textContent='距离下班 '+Math.floor(rm/60)+'h '+Math.round(rm%60)+'m + ' +S.workStart+'-'+S.workEnd;
+    document.getElementById('monthPct').textContent=fmt(mp*100)+'%';
+    document.getElementById('monthBar').style.width=fmt(mp*100)+'%';
+    document.getElementById('monthSub').textContent='累计 '+cny(em)+' / '+cny(proj);
+    document.getElementById('calDesc').textContent='法定 '+lw+' 天 + 加班 '+ot+' - 请假 '+lv+' = 有效 '+ew+' 天';
+  }else{
+    document.getElementById('todayEarned').textContent='--';
+    document.getElementById('monthEarned').textContent=cny(proj);
+    document.getElementById('todayHint').textContent='回顾模式';
+    document.getElementById('todayPct').textContent='--';
+    document.getElementById('todayBar').style.width='0%';
+    document.getElementById('todaySub').textContent=y+'年'+(m+1)+'月 + 回顾模式';
+    document.getElementById('monthPct').textContent='100.00%';
+    document.getElementById('monthBar').style.width='100%';
+    document.getElementById('monthSub').textContent='总计 '+cny(proj);
+    document.getElementById('calDesc').textContent='回顾 + 法定 '+lw+' 天 + 加班 '+ot+' - 请假 '+lv+' = 有效 '+ew+' 天';
   }
+
+  document.getElementById('heroWorkdays').textContent=ew;
+  document.getElementById('dailySalary').textContent=cny(dp);
+  document.getElementById('monthHint').textContent='预计到手 '+cny(proj);
+  document.getElementById('dailyHint').textContent='加班 +'+ot+' 天  +  请假 -'+lv+' 天';
+
+  document.getElementById('calMonthLabel').textContent=y+'年'+(m+1)+'月';
+  renderCal(y,m,isNow?d:-1);
 }
 
 // ====== 日历渲染 ======
-var calViewYear = 0, calViewMonth = 0;
-
-function updateMonthLabel(){
-  document.getElementById('calMonthLabel').textContent =
-    calViewYear + '年' + (calViewMonth + 1) + '月';
-}
-
-function renderCal(y, m, realToday, realNow){
-  calViewYear = y; calViewMonth = m;
-  updateMonthLabel();
-  var todayDate = (y === realNow.getFullYear() && m === realNow.getMonth()) ? realToday : -1;
-
-  var grid = document.getElementById('calGrid');
-  var days = new Date(y,m+1,0).getDate();
-  var fd = new Date(y,m,1).getDay();
-  var off = fd===0?6:fd-1;
-  grid.innerHTML = '';
-  for(var i=0;i<off;i++){ var e=document.createElement('span'); e.className='cal-cell'; e.style.visibility='hidden'; grid.appendChild(e); }
-  for(var day=1;day<=days;day++){
+function renderCal(y,m,today){
+  var grid=document.getElementById('calGrid');
+  var ds=new Date(y,m+1,0).getDate();
+  var off=(new Date(y,m,1).getDay()+6)%7;
+  grid.innerHTML='';
+  for(var i=0;i<off;i++){var e=document.createElement('span');e.className='cal-cell';e.style.visibility='hidden';grid.appendChild(e);}
+  for(var day=1;day<=ds;day++){
     var cell=document.createElement('span');
     cell.className='cal-cell';
-    var dow=new Date(y,m,day).getDay();
-    var wk=dow===0||dow===6;
-    var hol=isHoliday(y,m,day);
-    var ot=isOvertime(y,m,day);
-    var lv=isLeave(y,m,day);
 
-    // 用 inline style 完全控制样式，避免 CSS class 优先级问题
-    var bg = '', clr = '', fw = '';
+    var wk=isWeekend(y,m,day),hol=isHoliday(y,m,day),ot=isOvertime(y,m,day),lv=isLeave(y,m,day);
+    var bg,clr,fw='';
+    if(day===today){bg='var(--accent)';clr='#fff';fw='700';}
+    else if(ot){bg='#1a6fb5';clr='#fff';fw='600';}
+    else if(lv){bg='#fce4c8';clr='#b8731f';fw='600';}
+    else if(hol){bg='#fff0ed';clr='#e8603a';}
+    else if(wk){bg='transparent';clr='#c5c0b8';}
+    else{bg='#f6f3ee';clr='#1a1a1a';}
+    cell.style.background=bg;cell.style.color=clr;if(fw)cell.style.fontWeight=fw;
 
-    if (day===todayDate) {
-      bg = 'var(--accent)'; clr = '#fff'; fw = '700';
-    } else if (ot) {
-      bg = '#1a6fb5'; clr = '#fff'; fw = '600';  // 深蓝
-    } else if (lv) {
-      bg = '#fce4c8'; clr = '#b8731f'; fw = '600';  // 浅杏橙
-    } else if (hol) {
-      bg = '#fff0ed'; clr = '#e8603a';
-    } else if (wk) {
-      bg = 'transparent'; clr = '#c5c0b8';
-    } else {
-      bg = '#f6f3ee'; clr = '#1a1a1a';
-    }
+    var ns=document.createElement('span');ns.textContent=day;cell.appendChild(ns);
 
-    cell.style.background = bg;
-    cell.style.color = clr;
-    if (fw) cell.style.fontWeight = fw;
+    var tag='',tbg='';
+    if(ot){tag='加';tbg='#1a6fb5';}else if(lv){tag='休';tbg='#cc8635';}
+    if(tag){var t=document.createElement('span');t.className='cal-cell-tag';t.textContent=tag;t.style.background=tbg;cell.appendChild(t);}
 
-    // 数字
-    var numSpan = document.createElement('span');
-    numSpan.textContent = day;
-    cell.appendChild(numSpan);
-
-    // 标签圆点
-    var tagText = '';
-    var tagBg = '';
-    if (ot) { tagText = '加'; tagBg = '#1a6fb5'; }
-    else if (lv) { tagText = '休'; tagBg = '#cc8635'; }
-
-    if(tagText){
-      var t=document.createElement('span');
-      t.className = 'cal-cell-tag';
-      t.textContent = tagText;
-      t.style.background = tagBg;
-      cell.appendChild(t);
-    }
-
-    // 点击切换
-    (function(cellDay, isWk, isHol){
-      cell.addEventListener('click', function(){
-        var kk = keyDate(y, m, cellDay);
-        if (isWk || isHol) {
-          if (overtimeDates.has(kk)) overtimeDates.delete(kk);
-          else overtimeDates.add(kk);
-        } else {
-          if (leaveDates.has(kk)) leaveDates.delete(kk);
-          else leaveDates.add(kk);
-        }
-        updateOvertimeDisplay();
-        save();
-        renderCal(y, m, realToday, realNow);
+    (function(dd,isWk,isHol){
+      cell.addEventListener('click',function(){
+        var k=key(y,m,dd);
+        if(isWk||isHol){OT.has(k)?OT.delete(k):OT.add(k);}
+        else{LV.has(k)?LV.delete(k):LV.add(k);}
+        persist();refresh(y,m,new Date());
       });
-    })(day, wk, hol);
+    })(day,wk,hol);
 
     grid.appendChild(cell);
   }
 }
 
-// ====== 更新循环 ======
+// ====== 月份导航 ======
+var vy=0,vm=0;
+
+function go(delta){
+  vm+=delta;if(vm<0){vm=11;vy--;}if(vm>11){vm=0;vy++;}
+  var n=new Date();vy=vy>n.getFullYear()+1?n.getFullYear()+1:vy;vy=vy<2026?2026:vy;
+  refresh(vy,vm,n);
+}
+
+// ====== 每秒刷新 ======
 function tick(){
-  var now = new Date();
-  var hh=pad(now.getHours()), mm=pad(now.getMinutes()), ss=pad(now.getSeconds());
-
-  // 顶栏时间
-  document.getElementById('topTime').textContent = now.getFullYear()+'年'+pad(now.getMonth()+1)+'月'+pad(now.getDate())+'日 '+hh+':'+mm+':'+ss;
-
-  // 实时时钟
-  document.getElementById('liveClock').textContent = hh+':'+mm+':'+ss;
-  document.getElementById('clockHint').textContent = settings.timezone;
-  document.getElementById('heroSub').textContent = '时区 ' + settings.timezone + ' · ' + now.getFullYear() + '/' + pad(now.getMonth()+1) + '/' + pad(now.getDate());
-
-  // 如果是当前月，更新全部数据；否则只更新时钟不停留在回顾月
-  var yy = now.getFullYear(), mm = now.getMonth();
-  if (yy === calViewYear && mm === calViewMonth) {
-    compute();
-    renderCal(now.getFullYear(), now.getMonth(), now.getDate(), now);
-  }
-  // 非当前月：不干扰用户正在浏览的月份
-}
-
-function goMonth(delta){
-  calViewMonth += delta;
-  if (calViewMonth < 0) { calViewMonth = 11; calViewYear--; }
-  if (calViewMonth > 11) { calViewMonth = 0; calViewYear++; }
-  var now = new Date();
-  if (calViewYear === now.getFullYear() && calViewMonth === now.getMonth()) {
-    compute();
-    renderCal(now.getFullYear(), now.getMonth(), now.getDate(), now);
-  } else {
-    computeMonth(calViewYear, calViewMonth, now);
-  }
-}
-
-function computeMonth(y, m, realNow){
-  calViewYear = y; calViewMonth = m;
-  updateMonthLabel();
-  var legalWorkdays = 0, effectiveWorkdays = 0;
-  var overtimeCount = 0, leaveCount = 0;
-  var daysInM = new Date(y,m+1,0).getDate();
-  for(var dd=1; dd<=daysInM; dd++){
-    if (isLegalWorkday(y,m,dd)) legalWorkdays++;
-    if (isEffectiveWorkday(y,m,dd)) effectiveWorkdays++;
-    var isHolOrWk = isHoliday(y,m,dd) || (new Date(y,m,dd).getDay()===0 || new Date(y,m,dd).getDay()===6);
-    if (isHolOrWk && isOvertime(y,m,dd)) overtimeCount++;
-    if (!isHolOrWk && isLeave(y,m,dd)) leaveCount++;
-  }
-  document.getElementById('heroWorkdays').textContent = effectiveWorkdays;
-  document.getElementById('calDesc').textContent =
-    '法定 ' + legalWorkdays + ' 天 · 加班 +' + overtimeCount + ' · 请假 -' + leaveCount + ' 天（回顾模式）';
-  // 清除实时数据
-  document.getElementById('todayEarned').textContent = '¥0.00';
-  document.getElementById('monthEarned').textContent = cny(legalWorkdays ? settings.baseSalary / legalWorkdays * effectiveWorkdays : 0);
-  document.getElementById('todayPct').textContent = '0.00%';
-  document.getElementById('todayBar').style.width = '0%';
-  document.getElementById('monthPct').textContent = '100.00%';
-  document.getElementById('monthBar').style.width = '100%';
-  document.getElementById('todaySub').textContent = '回顾模式 · ' + y + '年' + (m+1) + '月';
-  document.getElementById('monthSub').textContent = '累计 ' + cny(settings.baseSalary / Math.max(legalWorkdays,1) * effectiveWorkdays);
-  renderCal(y, m, -1, realNow);
+  var n=new Date(),hh=pad(n.getHours()),mm=pad(n.getMinutes()),ss=pad(n.getSeconds());
+  document.getElementById('topTime').textContent=n.getFullYear()+'年'+pad(n.getMonth()+1)+'月'+pad(n.getDate())+'日 '+hh+':'+mm+':'+ss;
+  document.getElementById('liveClock').textContent=hh+':'+mm+':'+ss;
+  document.getElementById('clockHint').textContent=S.timezone;
+  document.getElementById('heroSub').textContent='时区 '+S.timezone+' + '+n.getFullYear()+'/'+pad(n.getMonth()+1)+'/'+pad(n.getDate());
+  if(n.getFullYear()===vy&&n.getMonth()===vm)refresh(vy,vm,n);
 }
 
 // ====== 响应式 ======
 function adapt(){
-  var w = window.innerWidth;
-  var mc = document.getElementById('mainCol');
-  var sc = document.getElementById('sideCol');
-  var cp = document.getElementById('configPanel');
-  var calp = document.getElementById('calendarPanel');
-  var dr = document.getElementById('dashboardRoot');
-
-  if (w >= 1000) {
-    dr.style.gridTemplateColumns = '1fr 340px';
-    if (cp.parentNode !== sc) sc.appendChild(cp);
-    if (calp.parentNode !== mc) mc.appendChild(calp);
-  } else {
-    dr.style.gridTemplateColumns = '1fr';
-    if (cp.parentNode !== mc) mc.appendChild(cp);
-    if (calp.parentNode !== mc) mc.appendChild(calp);
-  }
+  var w=window.innerWidth,mc=document.getElementById('mainCol'),sc=document.getElementById('sideCol');
+  var cp=document.getElementById('configPanel'),calp=document.getElementById('calendarPanel');
+  var dr=document.getElementById('dashboardRoot');
+  if(w>=1000){dr.style.gridTemplateColumns='1fr 340px';if(cp.parentNode!==sc)sc.appendChild(cp);if(calp.parentNode!==mc)mc.appendChild(calp);}
+  else{dr.style.gridTemplateColumns='1fr';if(cp.parentNode!==mc)mc.appendChild(cp);if(calp.parentNode!==mc)mc.appendChild(calp);}
 }
 
 // ====== 启动 ======
-(function init(){
-  adapt();
-  window.addEventListener('resize', adapt);
-  load();
-
-  var now = new Date();
-  calViewYear = now.getFullYear();
-  calViewMonth = now.getMonth();
-  updateMonthLabel();
-  compute();
-  renderCal(now.getFullYear(), now.getMonth(), now.getDate(), now);
-
-  document.getElementById('btnSave').addEventListener('click', save);
-  document.getElementById('calPrev').addEventListener('click', function(){ goMonth(-1); });
-  document.getElementById('calNext').addEventListener('click', function(){ goMonth(1); });
-
-  setInterval(tick, 1000);
+(function(){
+  adapt();window.addEventListener('resize',adapt);load();
+  var n=new Date();vy=n.getFullYear();vm=n.getMonth();
+  refresh(vy,vm,n);
+  document.getElementById('btnSave').addEventListener('click',function(){persist();refresh(vy,vm,new Date());});
+  document.getElementById('calPrev').addEventListener('click',function(){go(-1);});
+  document.getElementById('calNext').addEventListener('click',function(){go(1);});
+  setInterval(tick,1000);
 })();
 </script>
 </body>
